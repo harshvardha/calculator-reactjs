@@ -1,13 +1,94 @@
-body {
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  background-color: #d9d9d9;
+  font-family: "Poppins", sans-serif;
+
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.App {
+  background-color: #262626;
+  width: 390px;
+  height: 650px;
+  border: 0px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.keypad {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  background-color: #262626;
+  width: 100%;
+  height: 430px;
+  border: 0px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.keypad--row {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.keypad--buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #262626;
+  width: 75px;
+  height: 75px;
+  border: 0px;
+  border-radius: 50px;
+  font-size: 23px;
+  font-weight: 500;
+  padding: 15px;
+  cursor: pointer;
+  box-shadow: 0px 0px 4px #404040;
+}
+
+.keypad--buttons:active {
+  box-shadow: inset 0px 0px 4px #404040;
+}
+
+.keypad--unary--operators {
+  color: #66cc99;
+  font-family: "Poppins";
+}
+
+.keypad--last {
+  color: #e63900;
+  font-size: 30px;
+}
+
+.keypad--numbers {
+  color: #fff;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+input[type="text"] {
+  font-family: "Poppins", sans-serif;
+  background-color: #262626;
+  text-align: right;
+  padding: 10px;
 }
