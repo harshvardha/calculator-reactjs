@@ -83,7 +83,6 @@ body {
 .input {
   display: flex;
   flex-direction: column;
-  row-gap: 20px;
 }
 
 input[type="text"] {
@@ -91,4 +90,22 @@ input[type="text"] {
   background-color: #262626;
   text-align: right;
   padding: 10px;
+  border: 0px;
+  outline: none;
+  caret-color: transparent;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+}
+
+::placeholder {
+  color: #fff;
+}
+
+#input--equation {
+  font-size: 20px;
+}
+
+#input--result {
+  font-size: 50px;
+  font-weight: 700;
 }

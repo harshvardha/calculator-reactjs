@@ -1,17 +1,17 @@
-const Input = () => {
+const Input = ({ input, result }) => {
     return (
         <div className="input">
             <input
-                id="input--result"
+                id="input--equation"
                 type="text"
-                placeholder=""
+                value={input}
                 onKeyDown={(event) => event.preventDefault()}
             />
 
             <input
                 id="input--result"
                 type="text"
-                placeholder="0"
+                value={result}
                 onKeyDown={(event) => event.preventDefault()}
             />
         </div>
