@@ -11,14 +11,48 @@ function App() {
   }
 
   const handleResult = () => {
-    const oparatorPrecedence = { "/": 1, "*": 2, "+": 3, "-": 4 }
+    const operatorPrecedence = { "/": 1, "*": 2, "+": 3, "-": 4 }
     let operatorArray = []
     let res = 0
+    let char = '', reducedInput = ""
     for (let i = 0; i < input.length; i++) {
-      switch (input.charAt(i)) {
+      char = input.charAt(i)
+      switch (char) {
         case '/':
-
+          if (operatorArray.length === 0) {
+            operatorArray.push(i)
+          }
+          else {
+            const index = searchIndex(operatorArray, char, operatorPrecedence)
+            operatorArray.splice(index, 0, i)
+          }
       }
+    }
+  }
+
+  const searchIndex = (arr, key, precedence) => {
+    let start = 0, last = arr.length, mid = -1
+    while (start <= last && start < arr.length && last >= 0) {
+      mid = (start + last) / 2
+      let operator = input.charAt(arr[mid])
+      if (precedence[operator] === precedence[key]) {
+        return mid
+      }
+      else if (precedence[key] > precedence[operator]) {
+        start = mid + 1
+      }
+      else if (precedence[key] < precedence[operator]) {
+        last = mid - 1
+      }
+    }
+    if (start >= arr.length) {
+      return arr.length
+    }
+    else if (last < 0) {
+      return 0
+    }
+    else if (start > last) {
+      return mid
     }
   }
 
