@@ -14,11 +14,16 @@ function App() {
     const operatorPrecedence = { "/": 1, "*": 2, "+": 3, "-": 4 }
     let operatorArray = []
     let res = 0
-    let char = '', reducedInput = ""
+    let char = '', reducedInput = input
+    let num1, num2
     for (let i = 0; i < input.length; i++) {
       char = input.charAt(i)
       switch (char) {
         case '/':
+        case '*':
+        case '+':
+        case '-':
+        case '%':
           if (operatorArray.length === 0) {
             operatorArray.push(i)
           }
@@ -26,8 +31,40 @@ function App() {
             const index = searchIndex(operatorArray, char, operatorPrecedence)
             operatorArray.splice(index, 0, i)
           }
+          break
       }
     }
+    for (let i = 0; i < operatorArray.length; i++) {
+      let operatorIndex = reducedInput.indexOf(input.charAt(arr[i]))
+      num1 = getLeftNumber(operatorIndex, reducedInput)
+      num2 = getRightNumber(operatorIndex, reducedInput)
+      switch (reducedInput.charAt(operatorIndex)) {
+        case '/':
+          res = divide(num1, num2)
+          break
+        case '*':
+          res = multiply(num1, num2)
+          break
+        case '+':
+          res = add(num1, num2)
+          break
+        case '-':
+          res = subtract(num1, num2)
+          break
+        case '%':
+          res = remainder(num1, num2)
+          break
+      }
+      let leftIndex = getLeftIndex(reducedInput, operatorIndex)
+      let rightIndex = getRightIndex(reducedInput, operatorIndex)
+      if (leftIndex === 0) {
+        reducedInput = String(res) + reducedInput.slice(rightIndex + num2.length)
+      }
+      else if (leftIndex > 0 && rightIndex < reducedInput.length) {
+        reducedInput = reducedInput.slice(0, leftIndex) + String(res) + reducedInput.slice(rightIndex + num2.length)
+      }
+    }
+    setResult(res)
   }
 
   const searchIndex = (arr, key, precedence) => {
