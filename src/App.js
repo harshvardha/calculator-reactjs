@@ -5,13 +5,17 @@ import { useState } from "react"
 function App() {
   const [result, setResult] = useState(0)
   const [input, setInput] = useState("")
+  const [isResultSet, setIsResultSet] = useState(false)
 
   const handleInput = (event) => {
+    if (isResultSet) {
+      refresh()
+    }
     setInput(prevInput => prevInput + event.target.value)
   }
 
   const handleResult = () => {
-    const operatorPrecedence = { "/": 1, "*": 2, "+": 3, "-": 4 }
+    const operatorPrecedence = { "/": 1, "*": 2, "+": 3, "-": 4, "%": 5 }
     let operatorArray = []
     let res = 0
     let char = '', reducedInput = input
@@ -28,49 +32,50 @@ function App() {
             operatorArray.push(i)
           }
           else {
-            const index = searchIndex(operatorArray, char, operatorPrecedence)
+            const index = _searchIndex(operatorArray, char, operatorPrecedence)
             operatorArray.splice(index, 0, i)
           }
           break
       }
     }
     for (let i = 0; i < operatorArray.length; i++) {
-      let operatorIndex = reducedInput.indexOf(input.charAt(arr[i]))
-      num1 = getLeftNumber(operatorIndex, reducedInput)
-      num2 = getRightNumber(operatorIndex, reducedInput)
+      let operatorIndex = reducedInput.indexOf(input.charAt(operatorArray[i]))
+      num1 = _getLeftNumber(reducedInput, operatorIndex)
+      num2 = _getRightNumber(reducedInput, operatorIndex)
       switch (reducedInput.charAt(operatorIndex)) {
         case '/':
-          res = divide(num1, num2)
+          res = _divide(num1, num2)
           break
         case '*':
-          res = multiply(num1, num2)
+          res = _multiply(num1, num2)
           break
         case '+':
-          res = add(num1, num2)
+          res = _add(Number(num1), Number(num2))
           break
         case '-':
-          res = subtract(num1, num2)
+          res = _subtract(num1, num2)
           break
         case '%':
-          res = remainder(num1, num2)
+          res = _remainder(num1, num2)
           break
       }
-      let leftIndex = getLeftIndex(reducedInput, operatorIndex)
-      let rightIndex = getRightIndex(reducedInput, operatorIndex)
+      let leftIndex = operatorIndex - num1.length
+      let rightIndex = operatorIndex + num2.length
       if (leftIndex === 0) {
-        reducedInput = String(res) + reducedInput.slice(rightIndex + num2.length)
+        reducedInput = String(res) + reducedInput.slice(rightIndex + 1)
       }
       else if (leftIndex > 0 && rightIndex < reducedInput.length) {
-        reducedInput = reducedInput.slice(0, leftIndex) + String(res) + reducedInput.slice(rightIndex + num2.length)
+        reducedInput = reducedInput.slice(0, leftIndex) + String(res) + reducedInput.slice(rightIndex + 1)
       }
     }
     setResult(res)
+    setIsResultSet(prevState => !prevState)
   }
 
-  const searchIndex = (arr, key, precedence) => {
+  const _searchIndex = (arr, key, precedence) => {
     let start = 0, last = arr.length, mid = -1
     while (start <= last && start < arr.length && last >= 0) {
-      mid = (start + last) / 2
+      mid = Math.floor((start + last) / 2)
       let operator = input.charAt(arr[mid])
       if (precedence[operator] === precedence[key]) {
         return mid
@@ -93,23 +98,55 @@ function App() {
     }
   }
 
-  const add = (num1, num2) => {
+  const _getLeftNumber = (reducedInput, operatorIndex) => {
+    let num = "", index = operatorIndex - 1
+    let char = reducedInput.charAt(index)
+    while (
+      char !== '/' && char !== '*' &&
+      char !== '+' && char !== '-' &&
+      char !== '%'
+    ) {
+      num = char + num
+      index--
+      if (index >= 0)
+        char = reducedInput.charAt(index)
+      else
+        break
+    }
+    return num
+  }
+
+  const _getRightNumber = (reducedInput, operatorIndex) => {
+    let num = "", index = operatorIndex + 1
+    let char = reducedInput.charAt(index)
+    while (char != '/' && char != '*' && char != '+' && char != '-' && char != '%') {
+      num += char
+      index++
+      if (index < reducedInput.length)
+        char = reducedInput.charAt(index)
+      else
+        break
+    }
+    return num
+  }
+
+  const _add = (num1, num2) => {
     return num1 + num2
   }
 
-  const subtract = (num1, num2) => {
+  const _subtract = (num1, num2) => {
     return num1 - num2
   }
 
-  const multiply = (num1, num2) => {
+  const _multiply = (num1, num2) => {
     return num1 * num2
   }
 
-  const divide = (num1, num2) => {
+  const _divide = (num1, num2) => {
     return num1 / num2
   }
 
-  const remainder = (num1, num2) => {
+  const _remainder = (num1, num2) => {
     return num1 % num2
   }
 
@@ -124,12 +161,14 @@ function App() {
   const refresh = () => {
     setInput("")
     setResult(0)
+    if (isResultSet)
+      setIsResultSet(prevState => !prevState)
   }
 
   return (
     <div className="App">
       <Input input={input} result={result} />
-      <KeyPad />
+      <KeyPad handleInput={handleInput} handleResult={handleResult} allClear={allClear} refresh={refresh} />
     </div>
   );
 }
