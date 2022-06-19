@@ -5,14 +5,14 @@ const Input = ({ input, result }) => {
                 id="input--equation"
                 type="text"
                 value={input}
-                onKeyDown={(event) => event.preventDefault()}
+                readOnly={true}
             />
 
             <input
                 id="input--result"
                 type="text"
                 value={result}
-                onKeyDown={(event) => event.preventDefault()}
+                readOnly={true}
             />
         </div>
     )

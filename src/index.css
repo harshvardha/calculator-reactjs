@@ -73,7 +73,7 @@ body {
 
 .keypad--last {
   color: #e63900;
-  font-size: 30px;
+  font-size: 27px;
 }
 
 .keypad--numbers {
@@ -108,4 +108,5 @@ input[type="text"] {
 #input--result {
   font-size: 50px;
   font-weight: 700;
+  text-overflow: clip;
 }

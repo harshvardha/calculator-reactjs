@@ -1,21 +1,73 @@
 import KeyPad from "./components/KeyPad";
 import Input from "./components/Input";
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 function App() {
   const [result, setResult] = useState(0)
   const [input, setInput] = useState("")
   const [isResultSet, setIsResultSet] = useState(false)
 
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyboardEvents)
+  })
+
+  const handleKeyboardEvents = (event) => {
+    const char = event.key
+    console.log(char)
+    if (char === "Enter")
+      handleResult()
+    else if (char === "Escape")
+      refresh()
+    else if (char === "Backspace")
+      allClear()
+    else {
+      switch (char) {
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case '/':
+        case '-':
+        case '+':
+        case '.':
+        case '%':
+        case '*':
+          handleInput(event)
+          break
+        default:
+          break
+      }
+    }
+  }
+
   const handleInput = (event) => {
     if (isResultSet) {
       refresh()
     }
-    setInput(prevInput => prevInput + event.target.value)
+    setInput(prevInput => {
+      let char
+      if (event.key === undefined)
+        char = event.target.value
+      else
+        char = event.key === "*" ? 'x' : event.key
+      if (prevInput === "" && (char === "/" || char === "x" || char === "+" || char === "-" || char === "%")) {
+        if (result !== 0)
+          return String(result) + char
+        return "0" + char
+      }
+      return prevInput + char
+    }
+    )
   }
 
   const handleResult = () => {
-    const operatorPrecedence = { "/": 1, "*": 2, "+": 3, "-": 4, "%": 5 }
+    const operatorPrecedence = { "/": 1, "x": 2, "+": 3, "-": 4, "%": 5 }
     let operatorArray = []
     let res = 0
     let char = '', reducedInput = input
@@ -24,7 +76,7 @@ function App() {
       char = input.charAt(i)
       switch (char) {
         case '/':
-        case '*':
+        case 'x':
         case '+':
         case '-':
         case '%':
@@ -36,6 +88,8 @@ function App() {
             operatorArray.splice(index, 0, i)
           }
           break
+        default:
+          break
       }
     }
     for (let i = 0; i < operatorArray.length; i++) {
@@ -46,7 +100,7 @@ function App() {
         case '/':
           res = _divide(num1, num2)
           break
-        case '*':
+        case 'x':
           res = _multiply(num1, num2)
           break
         case '+':
@@ -57,6 +111,8 @@ function App() {
           break
         case '%':
           res = _remainder(num1, num2)
+          break
+        default:
           break
       }
       let leftIndex = operatorIndex - num1.length
@@ -69,7 +125,7 @@ function App() {
       }
     }
     setResult(res)
-    setIsResultSet(prevState => !prevState)
+    setIsResultSet(true)
   }
 
   const _searchIndex = (arr, key, precedence) => {
@@ -102,7 +158,7 @@ function App() {
     let num = "", index = operatorIndex - 1
     let char = reducedInput.charAt(index)
     while (
-      char !== '/' && char !== '*' &&
+      char !== '/' && char !== 'x' &&
       char !== '+' && char !== '-' &&
       char !== '%'
     ) {
@@ -119,7 +175,16 @@ function App() {
   const _getRightNumber = (reducedInput, operatorIndex) => {
     let num = "", index = operatorIndex + 1
     let char = reducedInput.charAt(index)
-    while (char != '/' && char != '*' && char != '+' && char != '-' && char != '%') {
+    if (char === '-') {
+      num += char
+      index++
+      char = reducedInput.charAt(index)
+    }
+    else if (char === '+') {
+      index++
+      char = reducedInput.charAt(index)
+    }
+    while (char !== '/' && char !== 'x' && char !== '+' && char !== '-' && char !== '%') {
       num += char
       index++
       if (index < reducedInput.length)
@@ -139,11 +204,11 @@ function App() {
   }
 
   const _multiply = (num1, num2) => {
-    return num1 * num2
+    return Math.round(num1 * num2 * 10000) / 10000
   }
 
   const _divide = (num1, num2) => {
-    return num1 / num2
+    return Math.round((num1 / num2) * 10000) / 10000
   }
 
   const _remainder = (num1, num2) => {
@@ -162,7 +227,7 @@ function App() {
     setInput("")
     setResult(0)
     if (isResultSet)
-      setIsResultSet(prevState => !prevState)
+      setIsResultSet(false)
   }
 
   return (
